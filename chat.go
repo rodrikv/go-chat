@@ -12,7 +12,7 @@ type ChatService struct {
 	OnGetMessages    OnGetMessages
 	OnRecieveMessage OnRecieveMessage
 	OnAfterResponse  OnAfterResponse
-	OnStream         func(MessageChannel *chan any, EventNameChannel *chan string)
+	OnStream         func(MessageChannel *chan any, EventNameChannel *chan string, DoneChannel *chan bool)
 
 	TimeOut time.Duration
 }
