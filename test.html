@@ -1,0 +1,62 @@
+<!-- index.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Streaming Example</title>
+  <style>
+    /* Add your CSS styling here */
+  </style>
+</head>
+<body>
+  <div>
+    <h2>Event Streaming Example</h2>
+    <label for="messageInput">Enter Message:</label>
+    <input type="text" id="messageInput" />
+    <button onclick="sendMessage()">Send Message</button>
+  </div>
+
+  <div>
+    <h3>Received Messages:</h3>
+    <ul id="messageList"></ul>
+  </div>
+
+  <script>
+    // Add your JavaScript code here
+    const messageInput = document.getElementById('messageInput');
+    const messageList = document.getElementById('messageList');
+
+    function sendMessage() {
+      const message = messageInput.value;
+      if (message.trim() !== '') {
+        fetch('http://localhost:8080/event-stream', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ message }),
+        })
+        .then(response => response.json())
+        .then(data => console.log('Message sent:', data))
+        .catch(error => console.error('Error sending message:', error));
+      }
+    }
+
+    // Event streaming using Server-Sent Events (SSE)
+    const eventSource = new EventSource('/event-stream');
+    eventSource.addEventListener('message', (event) => {
+      const receivedMessage = event.data;
+      const listItem = document.createElement('li');
+      listItem.textContent = receivedMessage;
+      messageList.appendChild(listItem);
+    });
+
+    eventSource.onerror = (error) => {
+      console.error('EventSource failed:', error);
+      eventSource.close();
+    };
+  </script>
+</body>
+</html>

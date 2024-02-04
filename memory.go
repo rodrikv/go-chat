@@ -1,6 +1,9 @@
 package main
 
-import "sync"
+import (
+	"log"
+	"sync"
+)
 
 type ChatMessage struct {
 	Content string `json:"content"`
@@ -29,4 +32,42 @@ func (c *ChatCache) GetMessages(chatID string) ([]ChatMessage, bool) {
 	defer c.mu.RUnlock()
 	messages, ok := c.messages[chatID]
 	return messages, ok
+}
+
+func (c *ChatCache) OnGetMessages(chatId string) ([]interface{}, error) {
+	log.Println("all messages", c.messages)
+	log.Println("getting messages for chatId: ", chatId)
+	msList := make([]interface{}, 0)
+	messages, _ := c.GetMessages(chatId)
+	log.Printf("[%s]messages: %v", chatId, messages)
+	// convert messages to interface
+	for i, m := range messages {
+		msList[i] = m
+	}
+	return msList, nil
+}
+
+func (c *ChatCache) SaveChatPair(chatId string, content string, response interface{}) {
+	r, ok := response.(Response)
+	log.Println("saving chat pair", chatId, content, response)
+	if !ok {
+		log.Println("unable to save chat pair", response)
+		return
+	}
+	c.SaveMessage(
+		ChatMessage{
+			Content: content,
+			Roll:    assistantRoll,
+		},
+		chatId,
+	)
+	c.SaveMessage(
+		ChatMessage{
+			Content: r.Message,
+			Roll:    userRoll,
+		},
+		chatId,
+	)
+
+	log.Printf("[%s]messages: %v", chatId, c.messages[chatId])
 }

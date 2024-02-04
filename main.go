@@ -10,6 +10,13 @@ import (
 func main() {
 	r := gin.Default()
 
+	r.Use(func(c *gin.Context) {
+		c.Header("Access-Control-Allow-Origin", "*")
+		c.Header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+		c.Header("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+		c.Next()
+	})
+
 	cs := ChatService{
 		OnRecieveMessage: func(chatId string, content string) (interface{}, error) {
 			return Success("hello"), nil
@@ -19,12 +26,11 @@ func main() {
 
 	cs.Bind(r.Group("/api"))
 
-	r.Run() // listen and serve on
+	r.Run()
 }
 
 func sampleHandler(messageChannel *chan any, eventNameChannel *chan string, DoneChannel *chan bool) {
 	for i := 0; i < 5; i++ {
-		// message := fmt.Sprintf("Message %d", i+1)
 		message := struct {
 			Message string `json:"message"`
 			Count   int    `json:"count"`
@@ -32,13 +38,10 @@ func sampleHandler(messageChannel *chan any, eventNameChannel *chan string, Done
 			Message: fmt.Sprintf("Message %d", i+1),
 			Count:   i + 1,
 		}
-		// Send the message to the client
 		*messageChannel <- message
 		*eventNameChannel <- "message"
 
-		// Introduce a delay to simulate some processing
 		time.Sleep(1 * time.Second)
 	}
-	// Close the channel when the messages are sent
 	*DoneChannel <- true
 }

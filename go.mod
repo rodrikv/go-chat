@@ -24,7 +24,7 @@ require (
 	github.com/pelletier/go-toml/v2 v2.1.1 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect
-	github.com/uussoop/ginstream v0.0.0-20240131075707-7632cc9adcf8
+	github.com/uussoop/ginstream v0.0.0-20240204113717-f946cb0f5da2
 	golang.org/x/arch v0.7.0 // indirect
 	golang.org/x/crypto v0.18.0 // indirect
 	golang.org/x/net v0.20.0 // indirect

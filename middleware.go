@@ -15,7 +15,8 @@ func ReadBody(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, Error("unable to process request"))
 		return
 	}
-	c.Set(requestMessageKey, &m)
+	c.Set(requestMessageKey, &m.Content)
+	c.Set(chatIdKey, m.ChatID)
 	c.Next()
 }
 
@@ -23,8 +24,9 @@ func AfterResponseMiddlewareFunc(save OnAfterResponse) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		c.Next()
 		if r, exists := c.Get(responseMessageKey); exists {
-			m, _ := c.MustGet(requestMessageKey).(*Message)
-			save(m.ChatID, m.Content, r)
+			rm, _ := c.MustGet(requestMessageKey).(*string)
+			ci, _ := c.MustGet(chatIdKey).(string)
+			save(ci, *rm, r)
 			c.JSON(http.StatusOK, r)
 		}
 	}

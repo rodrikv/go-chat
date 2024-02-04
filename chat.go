@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -18,50 +17,57 @@ type ChatService struct {
 }
 
 func (cs *ChatService) Bind(r *gin.RouterGroup) {
+	cc := NewChatCache()
 	if cs.TimeOut == 0 {
 		cs.TimeOut = 10 * time.Second
 	}
-
 	chatGroup := r.Group("/chat")
 	{
 		chatGroup.Use(ReadBody)
 		if cs.OnAfterResponse == nil {
-			cc := NewChatCache()
-			cs.OnAfterResponse = func(chatId string, content string, response interface{}) {
-				cc.SaveMessage(
-					ChatMessage{
-						Content: content,
-						Roll:    assistantRoll,
-					},
-					chatId,
-				)
-
-				r, _ := response.(Response)
-
-				cc.SaveMessage(
-					ChatMessage{
-						Content: r.Message,
-						Roll:    userRoll,
-					},
-					chatId,
-				)
-
-				log.Println(cc.GetMessages(chatId))
+			cs.OnAfterResponse = func(chatId, content string, response interface{}) {
+				cc.SaveChatPair(chatId, content, response)
 			}
 		}
+		path := "message"
 
-		if cs.OnAfterResponse != nil {
-			chatGroup.Use(AfterResponseMiddlewareFunc(cs.OnAfterResponse))
+		chatGroup.Use(AfterResponseMiddlewareFunc(cs.OnAfterResponse))
+		HandlerConf := ginstream.GeneralPurposeHandlerType{
+			StreamHandlerFunc:    cs.OnStream,
+			NonStreamHandlerFunc: sampleNonstreamHandler,
+
+			Timeout:           100 * time.Millisecond,
+			InputName:         &requestMessageKey,
+			OutputName:        &responseMessageKey,
+			StreamMessagePath: &path,
 		}
+
 		if cs.OnRecieveMessage != nil {
-			chatGroup.POST("/", ChatHandlerFunc(cs.OnRecieveMessage))
+			chatGroup.POST("/", ginstream.GeneralPurposeHandler(HandlerConf))
 		}
 		if cs.OnStream != nil {
-			chatGroup.POST("/stream", ginstream.StreamHandler(cs.OnStream, cs.TimeOut))
+			// chatGroup.POST("/stream", ginstream.StreamHandler(cs.OnStream, cs.TimeOut))
 		}
-		if cs.OnGetMessages != nil {
-			chatGroup.GET("/messages/:id", MessagesHandlerFunc(cs.OnGetMessages))
+	}
+	messageGroup := r.Group("/messages")
+	{
+		if cs.OnGetMessages == nil {
+			messageGroup.GET("/:id", MessagesHandlerFunc(cc.OnGetMessages))
+		} else {
+			messageGroup.GET("/:id", MessagesHandlerFunc(cs.OnGetMessages))
 		}
+	}
+}
+
+func sampleNonstreamHandler(
+	*string,
+) any {
+	return struct {
+		message string
+		status  int
+	}{
+		message: "hi",
+		status:  123,
 	}
 }
 

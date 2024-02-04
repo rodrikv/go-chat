@@ -88,6 +88,8 @@ github.com/uussoop/ginstream v0.0.0-20240130111033-5d9dac2be8ef h1:FvO8HCmqXzqEn
 github.com/uussoop/ginstream v0.0.0-20240130111033-5d9dac2be8ef/go.mod h1:C0ya8L3c+bn/RLNW5jsfcUM/PB2Sg1C/pFdPO30kJMw=
 github.com/uussoop/ginstream v0.0.0-20240131075707-7632cc9adcf8 h1:uJTEaKgiLZ2q6em9Xeyj0jtUVPx9CBUAgbvachyZZU4=
 github.com/uussoop/ginstream v0.0.0-20240131075707-7632cc9adcf8/go.mod h1:C0ya8L3c+bn/RLNW5jsfcUM/PB2Sg1C/pFdPO30kJMw=
+github.com/uussoop/ginstream v0.0.0-20240204113717-f946cb0f5da2 h1:JJgHdmsYpofbn2oIy4lc4jYUVYJT/N4l+9EtTjXVJMc=
+github.com/uussoop/ginstream v0.0.0-20240204113717-f946cb0f5da2/go.mod h1:C0ya8L3c+bn/RLNW5jsfcUM/PB2Sg1C/pFdPO30kJMw=
 golang.org/x/arch v0.0.0-20210923205945-b76863e36670/go.mod h1:5om86z9Hs0C8fWVUuoMHwpExlXzs5Tkyp9hOrfG7pp8=
 golang.org/x/arch v0.3.0 h1:02VY4/ZcO/gBOH6PUaoiptASxtXU10jazRCP865E97k=
 golang.org/x/arch v0.3.0/go.mod h1:5om86z9Hs0C8fWVUuoMHwpExlXzs5Tkyp9hOrfG7pp8=
