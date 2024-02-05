@@ -11,7 +11,8 @@ type ChatService struct {
 	OnGetMessages    OnGetMessages
 	OnRecieveMessage OnRecieveMessage
 	OnAfterResponse  OnAfterResponse
-	OnStream         func(MessageChannel *chan any, EventNameChannel *chan string, DoneChannel *chan bool)
+	OnStream         func(MessageChannel *chan any, EventNameChannel *chan string, DoneChannel *chan bool, inputMessage *string)
+	ContentPath      string
 
 	TimeOut time.Duration
 }
@@ -24,29 +25,24 @@ func (cs *ChatService) Bind(r *gin.RouterGroup) {
 	chatGroup := r.Group("/chat")
 	{
 		chatGroup.Use(ReadBody)
+		chatGroup.Use(LogMessagesMiddleware)
 		if cs.OnAfterResponse == nil {
-			cs.OnAfterResponse = func(chatId, content string, response interface{}) {
-				cc.SaveChatPair(chatId, content, response)
-			}
+			cs.OnAfterResponse = cc.SaveChatPair
 		}
-		path := "message"
 
 		chatGroup.Use(AfterResponseMiddlewareFunc(cs.OnAfterResponse))
 		HandlerConf := ginstream.GeneralPurposeHandlerType{
 			StreamHandlerFunc:    cs.OnStream,
-			NonStreamHandlerFunc: sampleNonstreamHandler,
+			NonStreamHandlerFunc: cs.OnRecieveMessage,
 
-			Timeout:           100 * time.Millisecond,
+			Timeout:           60 * time.Second,
 			InputName:         &requestMessageKey,
 			OutputName:        &responseMessageKey,
-			StreamMessagePath: &path,
+			StreamMessagePath: &cs.ContentPath,
 		}
 
 		if cs.OnRecieveMessage != nil {
 			chatGroup.POST("/", ginstream.GeneralPurposeHandler(HandlerConf))
-		}
-		if cs.OnStream != nil {
-			// chatGroup.POST("/stream", ginstream.StreamHandler(cs.OnStream, cs.TimeOut))
 		}
 	}
 	messageGroup := r.Group("/messages")
@@ -72,5 +68,5 @@ func sampleNonstreamHandler(
 }
 
 type OnGetMessages func(string) ([]interface{}, error)
-type OnRecieveMessage func(chatId string, content string) (interface{}, error)
-type OnAfterResponse func(chatId string, content string, response interface{})
+type OnRecieveMessage func(content *string) any
+type OnAfterResponse func(chatId string, content string, response string)

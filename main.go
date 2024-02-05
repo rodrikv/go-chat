@@ -18,10 +18,11 @@ func main() {
 	})
 
 	cs := ChatService{
-		OnRecieveMessage: func(chatId string, content string) (interface{}, error) {
-			return Success("hello"), nil
+		OnRecieveMessage: func(content *string) any {
+			return Success("hello")
 		},
-		OnStream: sampleHandler,
+		OnStream:    sampleHandler,
+		ContentPath: "message",
 	}
 
 	cs.Bind(r.Group("/api"))
@@ -29,13 +30,13 @@ func main() {
 	r.Run()
 }
 
-func sampleHandler(messageChannel *chan any, eventNameChannel *chan string, DoneChannel *chan bool) {
+func sampleHandler(messageChannel *chan any, eventNameChannel *chan string, DoneChannel *chan bool, inputMessage *string) {
 	for i := 0; i < 5; i++ {
 		message := struct {
 			Message string `json:"message"`
 			Count   int    `json:"count"`
 		}{
-			Message: fmt.Sprintf("Message %d", i+1),
+			Message: fmt.Sprintf("Message %s", *inputMessage),
 			Count:   i + 1,
 		}
 		*messageChannel <- message

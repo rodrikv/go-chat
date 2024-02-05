@@ -47,13 +47,7 @@ func (c *ChatCache) OnGetMessages(chatId string) ([]interface{}, error) {
 	return msList, nil
 }
 
-func (c *ChatCache) SaveChatPair(chatId string, content string, response interface{}) {
-	r, ok := response.(Response)
-	log.Println("saving chat pair", chatId, content, response)
-	if !ok {
-		log.Println("unable to save chat pair", response)
-		return
-	}
+func (c *ChatCache) SaveChatPair(chatId string, content string, response string) {
 	c.SaveMessage(
 		ChatMessage{
 			Content: content,
@@ -63,7 +57,7 @@ func (c *ChatCache) SaveChatPair(chatId string, content string, response interfa
 	)
 	c.SaveMessage(
 		ChatMessage{
-			Content: r.Message,
+			Content: response,
 			Roll:    userRoll,
 		},
 		chatId,

@@ -18,19 +18,3 @@ func MessagesHandlerFunc(getMessages OnGetMessages) func(c *gin.Context) {
 		return
 	}
 }
-
-func ChatHandlerFunc(recieve OnRecieveMessage) func(c *gin.Context) {
-	return func(c *gin.Context) {
-		rm := c.MustGet(requestMessageKey).(*string)
-		ci := c.MustGet(chatIdKey).(string)
-
-		r, err := recieve(ci, *rm)
-
-		if err != nil {
-			c.JSON(500, Error("unable to process request"))
-			return
-		}
-
-		c.Set(responseMessageKey, r)
-	}
-}

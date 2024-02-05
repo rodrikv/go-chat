@@ -31,7 +31,7 @@
     function sendMessage() {
       const message = messageInput.value;
       if (message.trim() !== '') {
-        fetch('http://localhost:8080/event-stream', {
+        fetch('http://localhost:8080/api/chat/', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
