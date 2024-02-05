@@ -37,8 +37,8 @@ func (c *ChatCache) GetMessages(chatID string) ([]ChatMessage, bool) {
 func (c *ChatCache) OnGetMessages(chatId string) ([]interface{}, error) {
 	log.Println("all messages", c.messages)
 	log.Println("getting messages for chatId: ", chatId)
-	msList := make([]interface{}, 0)
 	messages, _ := c.GetMessages(chatId)
+	msList := make([]interface{}, len(messages))
 	log.Printf("[%s]messages: %v", chatId, messages)
 	// convert messages to interface
 	for i, m := range messages {
