@@ -4,7 +4,7 @@ go 1.21.1
 
 require (
 	github.com/gin-gonic/gin v1.9.1
-	github.com/uussoop/ginstream v0.0.0-20240205112410-19ddaf4976a0
+	github.com/uussoop/ginstream v0.0.0-20240206083616-a0aad158f16f
 )
 
 require github.com/chenzhuoyu/iasm v0.9.1 // indirect

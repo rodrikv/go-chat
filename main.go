@@ -21,28 +21,26 @@ func main() {
 		OnRecieveMessage: func(content *string) any {
 			return Success("hello")
 		},
-		OnStream:    sampleHandler,
+		OnStream: func(messageChannel *chan any, eventNameChannel *chan string, DoneChannel *chan bool, inputMessage *string) {
+			for i := 0; i < 5; i++ {
+				message := struct {
+					Message string `json:"message"`
+					Count   int    `json:"count"`
+				}{
+					Message: fmt.Sprintf("Message %s", *inputMessage),
+					Count:   i + 1,
+				}
+				*messageChannel <- message
+				*eventNameChannel <- "message"
+
+				time.Sleep(1 * time.Second)
+			}
+			*DoneChannel <- true
+		},
 		ContentPath: "message",
 	}
 
 	cs.Bind(r.Group("/api"))
 
 	r.Run()
-}
-
-func sampleHandler(messageChannel *chan any, eventNameChannel *chan string, DoneChannel *chan bool, inputMessage *string) {
-	for i := 0; i < 5; i++ {
-		message := struct {
-			Message string `json:"message"`
-			Count   int    `json:"count"`
-		}{
-			Message: fmt.Sprintf("Message %s", *inputMessage),
-			Count:   i + 1,
-		}
-		*messageChannel <- message
-		*eventNameChannel <- "message"
-
-		time.Sleep(1 * time.Second)
-	}
-	*DoneChannel <- true
 }
