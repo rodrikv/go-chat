@@ -24,7 +24,7 @@ func (cs *ChatService) Bind(r *gin.RouterGroup) {
 	}
 	chatGroup := r.Group("/chat")
 	{
-		chatGroup.Use(ReadBody)
+		chatGroup.Use(ReadBodyMiddleware)
 		chatGroup.Use(LogMessagesMiddleware)
 		if cs.OnAfterResponse == nil {
 			cs.OnAfterResponse = cc.SaveChatPair

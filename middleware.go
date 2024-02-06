@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func ReadBody(c *gin.Context) {
+func ReadBodyMiddleware(c *gin.Context) {
 	var m Message
 	if err := c.BindJSON(&m); err != nil {
 		log.Println(err)
