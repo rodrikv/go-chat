@@ -41,7 +41,6 @@ func AfterResponseMiddlewareFunc(save OnAfterResponse) func(c *gin.Context) {
 			resm, _ := r.(*string)
 
 			save(ci, *rm, *resm)
-			c.JSON(http.StatusOK, r)
 		}
 	}
 }
@@ -54,7 +53,7 @@ func LogMessagesMiddleware(c *gin.Context) {
 	r, exists := c.Get(responseMessageKey)
 
 	if exists {
-		log.Println("Chat id: ", ci, "Request message: ", *rm, "Response message: ", r)
+		log.Println("Chat id: ", ci, "Request message: ", *rm, "Response message: ", *r.(*string))
 	} else {
 		log.Println("Chat id: ", ci, "Request message: ", *rm, "No reponse message")
 	}

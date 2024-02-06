@@ -22,6 +22,11 @@ func (cs *ChatService) Bind(r *gin.RouterGroup) {
 	if cs.TimeOut == 0 {
 		cs.TimeOut = 10 * time.Second
 	}
+
+	if cs.ContentPath == "" {
+		cs.ContentPath = "."
+	}
+
 	chatGroup := r.Group("/chat")
 	{
 		chatGroup.Use(ReadBodyMiddleware)
@@ -29,18 +34,15 @@ func (cs *ChatService) Bind(r *gin.RouterGroup) {
 		if cs.OnAfterResponse == nil {
 			cs.OnAfterResponse = cc.SaveChatPair
 		}
-
 		chatGroup.Use(AfterResponseMiddlewareFunc(cs.OnAfterResponse))
 		HandlerConf := ginstream.GeneralPurposeHandlerType{
 			StreamHandlerFunc:    cs.OnStream,
 			NonStreamHandlerFunc: cs.OnRecieveMessage,
-
-			Timeout:           60 * time.Second,
-			InputName:         &requestMessageKey,
-			OutputName:        &responseMessageKey,
-			StreamMessagePath: &cs.ContentPath,
+			Timeout:              60 * time.Second,
+			InputName:            &requestMessageKey,
+			OutputName:           &responseMessageKey,
+			StreamMessagePath:    &cs.ContentPath,
 		}
-
 		if cs.OnRecieveMessage != nil {
 			chatGroup.POST("/", ginstream.GeneralPurposeHandler(HandlerConf))
 		}
