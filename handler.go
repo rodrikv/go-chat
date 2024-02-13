@@ -1,4 +1,4 @@
-package main
+package gochat
 
 import "github.com/gin-gonic/gin"
 

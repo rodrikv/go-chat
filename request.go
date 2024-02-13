@@ -1,4 +1,4 @@
-package main
+package gochat
 
 type Message struct {
 	Content string `json:"content"`

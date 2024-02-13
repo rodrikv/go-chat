@@ -1,4 +1,4 @@
-package main
+package gochat
 
 import (
 	"time"
@@ -12,9 +12,9 @@ type ChatService struct {
 	OnRecieveMessage OnRecieveMessage
 	OnAfterResponse  OnAfterResponse
 	OnStream         func(MessageChannel *chan any, EventNameChannel *chan string, DoneChannel *chan bool, inputMessage *string)
-	ContentPath      string
 
-	TimeOut time.Duration
+	ContentPath string
+	TimeOut     time.Duration
 }
 
 func (cs *ChatService) Bind(r *gin.RouterGroup) {

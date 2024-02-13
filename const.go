@@ -1,4 +1,4 @@
-package main
+package gochat
 
 var (
 	requestMessageKey  = "request_message"
